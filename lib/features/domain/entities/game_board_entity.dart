@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'package:collection/collection.dart';
+
 import 'direction.dart';
 
 class GameBoardEntity {
@@ -40,16 +43,35 @@ class GameBoardEntity {
 
   // 3. O roteador de movimentos
   GameBoardEntity move(Direction direction) {
+    // 1. Executa o movimento geométrico
+    GameBoardEntity movedBoard;
     switch (direction) {
       case Direction.left:
-        return _moveLeft();
+        movedBoard = _moveLeft();
+        break;
       case Direction.right:
-        return _moveRight();
+        movedBoard = _moveRight();
+        break;
       case Direction.up:
-        return _moveUp();
+        movedBoard = _moveUp();
+        break;
       case Direction.down:
-        return _moveDown();
+        movedBoard = _moveDown();
+        break;
     }
+
+    // 2. Função auxiliar para checar se a matriz mudou após o movimento
+    final Function eq = const DeepCollectionEquality().equals;
+    bool didMove = !eq(movedBoard.matrix, this.matrix);
+
+    // Se o movimento não alterou nada no tabuleiro, ignora a jogada
+    if (!didMove) return this;
+
+    // 3. Coloca o bloco aleatório no tabuleiro movido
+    final finalBoard = movedBoard.spawnRandomTile();
+
+    // 4. Checa se o jogo acabou após o surgimento do novo bloco e devolve o estado final
+    return finalBoard.copyWith(isGameOver: _checkGameOver(finalBoard.matrix));
   }
 
   // 4. O motor matemático purificado (Esquerda)
@@ -85,6 +107,7 @@ class GameBoardEntity {
   }
 
   // Métodos auxiliares de matriz adaptados para o gridSize
+  // reverse é usado para inverter as linhas, e transpose para trocar linhas por colunas, facilitando os movimentos em outras direções.
   List<List<int>> _reverse(List<List<int>> matrix) =>
       matrix.map((row) => row.reversed.toList()).toList();
 
@@ -96,6 +119,7 @@ class GameBoardEntity {
   }
 
   // 5. Truques geométricos para as outras direções
+  // Para mover para a direita, invertemos as linhas, aplicamos a lógica de movimento para a esquerda e depois invertemos novamente.
   GameBoardEntity _moveRight() {
     var reversedMatrix = _reverse(matrix);
     var moved = GameBoardEntity(
@@ -106,6 +130,7 @@ class GameBoardEntity {
     return copyWith(matrix: _reverse(moved.matrix), score: moved.score);
   }
 
+  // Para mover para cima, transpondo a matriz, aplicando a lógica de movimento para a esquerda e depois transpondo novamente.
   GameBoardEntity _moveUp() {
     var transposed = _transpose(matrix);
     var moved = GameBoardEntity(
@@ -116,6 +141,7 @@ class GameBoardEntity {
     return copyWith(matrix: _transpose(moved.matrix), score: moved.score);
   }
 
+  // Para mover para baixo, transpondo a matriz, invertemos, aplicamos a lógica de movimento para a esquerda e depois transpondo novamente.
   GameBoardEntity _moveDown() {
     var transposed = _transpose(matrix);
     var reversed = _reverse(transposed);
@@ -126,5 +152,74 @@ class GameBoardEntity {
     )._moveLeft();
     var unReversed = _reverse(moved.matrix);
     return copyWith(matrix: _transpose(unReversed), score: moved.score);
+  }
+
+  // 6. Gerar um novo bloco aleatório
+  GameBoardEntity spawnRandomTile() {
+    // Point é uma classe do Dart que representa um ponto 2D, com coordenadas x e y.
+    List<Point<int>> emptyPositions = [];
+
+    // 1. Encontra todas as posições vazias (onde o valor é 0)
+    for (int row = 0; row < gridSize; row++) {
+      for (int column = 0; column < gridSize; column++) {
+        if (matrix[row][column] == 0) {
+          emptyPositions.add(Point(row, column));
+        }
+      }
+    }
+
+    // Se não há espaço vazio, retorna o próprio tabuleiro sem alterações
+    if (emptyPositions.isEmpty) return this;
+
+    // 2. Sorteia uma posição da lista
+    // nextInt(length) retorna um inteiro aleatório entre 0 (inclusive) e length (exclusive), garantindo que a posição sorteada seja válida dentro da lista de posições vazias.
+    final random = Random();
+    final randomPosition =
+        emptyPositions[random.nextInt(emptyPositions.length)];
+
+    // 3. Sorteia um número quebrado entre 0.0 e 1.0
+    final chance = random.nextDouble();
+    final int tileValue;
+
+    if (chance < 0.80) {
+      tileValue = 2; // 80% de chance (de 0.0 até 0.79)
+    } else if (chance < 0.95) {
+      tileValue = 4; // 15% de chance (de 0.80 até 0.94)
+    } else {
+      tileValue = 8; // 5% de chance (de 0.95 até 1.0)
+    }
+
+    // 4. Cria uma cópia da matriz atual para aplicar a alteração com segurança
+    List<List<int>> newMatrix = matrix
+        .map((row) => List<int>.from(row))
+        .toList();
+    newMatrix[randomPosition.x][randomPosition.y] = tileValue;
+
+    // 5. Retorna o novo estado com o bloco inserido
+    return copyWith(matrix: newMatrix);
+  }
+
+  bool _checkGameOver(List<List<int>> grid) {
+    // 1. Se ainda existir alguma casa vazia, o jogo NÃO acabou
+    for (int r = 0; r < gridSize; r++) {
+      for (int c = 0; c < gridSize; c++) {
+        if (grid[r][c] == 0) return false;
+      }
+    }
+
+    // 2. Verifica se existem blocos iguais vizinhos na horizontal ou vertical
+    for (int r = 0; r < gridSize; r++) {
+      for (int c = 0; c < gridSize; c++) {
+        int current = grid[r][c];
+
+        // Tem vizinho igual na direita?
+        if (c < gridSize - 1 && current == grid[r][c + 1]) return false;
+        // Tem vizinho igual embaixo?
+        if (r < gridSize - 1 && current == grid[r + 1][c]) return false;
+      }
+    }
+
+    // Se passou por tudo e não achou espaços ou combinações, o jogo acabou!
+    return true;
   }
 }
