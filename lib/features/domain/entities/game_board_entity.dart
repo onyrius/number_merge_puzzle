@@ -1,7 +1,8 @@
 import 'dart:math';
 import 'package:collection/collection.dart';
+import 'package:number_merge_puzzle/features/domain/utils/matrix_extensions.dart';
 
-import 'direction.dart';
+import '../value_objects/direction.dart';
 
 class GameBoardEntity {
   static const int defaultGridSize = 4;
@@ -106,52 +107,43 @@ class GameBoardEntity {
     return copyWith(matrix: newMatrix, score: score + pointsGained);
   }
 
-  // Métodos auxiliares de matriz adaptados para o gridSize
-  // reverse é usado para inverter as linhas, e transpose para trocar linhas por colunas, facilitando os movimentos em outras direções.
-  List<List<int>> _reverse(List<List<int>> matrix) =>
-      matrix.map((row) => row.reversed.toList()).toList();
-
-  List<List<int>> _transpose(List<List<int>> matrix) {
-    return List.generate(
-      gridSize,
-      (col) => List.generate(gridSize, (row) => matrix[row][col]),
-    );
-  }
-
   // 5. Truques geométricos para as outras direções
   // Para mover para a direita, invertemos as linhas, aplicamos a lógica de movimento para a esquerda e depois invertemos novamente.
   GameBoardEntity _moveRight() {
-    var reversedMatrix = _reverse(matrix);
+    var reversedMatrix = matrix.reverse();
     var moved = GameBoardEntity(
       matrix: reversedMatrix,
       score: score,
       gridSize: gridSize,
     )._moveLeft();
-    return copyWith(matrix: _reverse(moved.matrix), score: moved.score);
+    return copyWith(matrix: moved.matrix.reverse(), score: moved.score);
   }
 
   // Para mover para cima, transpondo a matriz, aplicando a lógica de movimento para a esquerda e depois transpondo novamente.
   GameBoardEntity _moveUp() {
-    var transposed = _transpose(matrix);
+    var transposed = matrix.transpose(gridSize);
     var moved = GameBoardEntity(
       matrix: transposed,
       score: score,
       gridSize: gridSize,
     )._moveLeft();
-    return copyWith(matrix: _transpose(moved.matrix), score: moved.score);
+    return copyWith(
+      matrix: moved.matrix.transpose(gridSize),
+      score: moved.score,
+    );
   }
 
   // Para mover para baixo, transpondo a matriz, invertemos, aplicamos a lógica de movimento para a esquerda e depois transpondo novamente.
   GameBoardEntity _moveDown() {
-    var transposed = _transpose(matrix);
-    var reversed = _reverse(transposed);
+    var transposed = matrix.transpose(gridSize);
+    var reversed = transposed.reverse();
     var moved = GameBoardEntity(
       matrix: reversed,
       score: score,
       gridSize: gridSize,
     )._moveLeft();
-    var unReversed = _reverse(moved.matrix);
-    return copyWith(matrix: _transpose(unReversed), score: moved.score);
+    var unReversed = moved.matrix.reverse();
+    return copyWith(matrix: unReversed.transpose(gridSize), score: moved.score);
   }
 
   // 6. Gerar um novo bloco aleatório
@@ -160,10 +152,10 @@ class GameBoardEntity {
     List<Point<int>> emptyPositions = [];
 
     // 1. Encontra todas as posições vazias (onde o valor é 0)
-    for (int row = 0; row < gridSize; row++) {
-      for (int column = 0; column < gridSize; column++) {
-        if (matrix[row][column] == 0) {
-          emptyPositions.add(Point(row, column));
+    for (int rowIndex = 0; rowIndex < gridSize; rowIndex++) {
+      for (int columnIndex = 0; columnIndex < gridSize; columnIndex++) {
+        if (matrix[rowIndex][columnIndex] == 0) {
+          emptyPositions.add(Point(rowIndex, columnIndex));
         }
       }
     }
@@ -201,21 +193,27 @@ class GameBoardEntity {
 
   bool _checkGameOver(List<List<int>> grid) {
     // 1. Se ainda existir alguma casa vazia, o jogo NÃO acabou
-    for (int r = 0; r < gridSize; r++) {
-      for (int c = 0; c < gridSize; c++) {
-        if (grid[r][c] == 0) return false;
+    for (int rowIndex = 0; rowIndex < gridSize; rowIndex++) {
+      for (int columnIndex = 0; columnIndex < gridSize; columnIndex++) {
+        if (grid[rowIndex][columnIndex] == 0) return false;
       }
     }
 
     // 2. Verifica se existem blocos iguais vizinhos na horizontal ou vertical
-    for (int r = 0; r < gridSize; r++) {
-      for (int c = 0; c < gridSize; c++) {
-        int current = grid[r][c];
+    for (int rowIndex = 0; rowIndex < gridSize; rowIndex++) {
+      for (int columnIndex = 0; columnIndex < gridSize; columnIndex++) {
+        int current = grid[rowIndex][columnIndex];
 
         // Tem vizinho igual na direita?
-        if (c < gridSize - 1 && current == grid[r][c + 1]) return false;
+        if (columnIndex < gridSize - 1 &&
+            current == grid[rowIndex][columnIndex + 1]) {
+          return false;
+        }
         // Tem vizinho igual embaixo?
-        if (r < gridSize - 1 && current == grid[r + 1][c]) return false;
+        if (rowIndex < gridSize - 1 &&
+            current == grid[rowIndex + 1][columnIndex]) {
+          return false;
+        }
       }
     }
 
