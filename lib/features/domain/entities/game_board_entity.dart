@@ -62,7 +62,7 @@ class GameBoardEntity {
 
     // 2. Função auxiliar para checar se a matriz mudou após o movimento
     final Function eq = const DeepCollectionEquality().equals;
-    bool didMove = !eq(movedBoard.matrix, this.matrix);
+    bool didMove = !eq(movedBoard.matrix, matrix);
 
     // Se o movimento não alterou nada no tabuleiro, ignora a jogada
     if (!didMove) return this;
