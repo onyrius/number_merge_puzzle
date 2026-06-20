@@ -4,7 +4,6 @@ import '../../domain/entities/board.dart';
 
 /// Estado imutável do jogo.
 /// Cada jogada gera um NOVO GameState — nunca mutamos o estado anterior.
-/// Isso é o que torna o Cubit previsível e fácil de testar.
 class GameState extends Equatable {
   final Board board;
   final int score;

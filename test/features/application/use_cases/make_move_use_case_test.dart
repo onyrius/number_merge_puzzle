@@ -38,18 +38,20 @@ void main() {
 
   group('MakeMoveUseCase Tests', () {
     test(
-      'should return status playing and not spawn a tile when the board does not move',
+      '''Given a board that cannot be moved in the chosen direction and the game is not over
+When MakeMoveUseCase is called
+Then it should return a playing status, zero score, and should not spawn a new tile''',
       () {
-        // Arrange
+        // Given
         when(() => mockEngine.move(initialBoard, any())).thenReturn(
           MoveResult(board: initialBoard, scoreGained: 0, moved: false),
         );
         when(() => mockEngine.isGameOver(initialBoard)).thenReturn(false);
 
-        // Act
+        // When
         final result = useCase.call(initialBoard, Direction.left);
 
-        // Assert
+        // Then
         expect(result.moved, false);
         expect(result.scoreGained, 0);
         expect(result.status, GameStatus.playing);
@@ -61,18 +63,20 @@ void main() {
     );
 
     test(
-      'should return status gameOver when the board does not move and no moves are left',
+      '''Given a board that cannot be moved in the chosen direction and no moves are left
+When MakeMoveUseCase is called
+Then it should return a gameOver status''',
       () {
-        // Arrange
+        // Given
         when(() => mockEngine.move(initialBoard, any())).thenReturn(
           MoveResult(board: initialBoard, scoreGained: 0, moved: false),
         );
         when(() => mockEngine.isGameOver(initialBoard)).thenReturn(true);
 
-        // Act
+        // When
         final result = useCase.call(initialBoard, Direction.up);
 
-        // Assert
+        // Then
         expect(result.moved, false);
         expect(result.status, GameStatus.gameOver);
         expect(result.board, initialBoard);
@@ -80,9 +84,11 @@ void main() {
     );
 
     test(
-      'should spawn a new tile and return status playing when a valid move occurs without win or game over',
+      '''Given a valid move that changes the board without winning or ending the game
+When MakeMoveUseCase is called
+Then it should spawn a new tile and return a playing status with the gained score''',
       () {
-        // Arrange
+        // Given
         when(() => mockEngine.move(initialBoard, Direction.right)).thenReturn(
           MoveResult(board: movedBoard, scoreGained: 16, moved: true),
         );
@@ -92,10 +98,10 @@ void main() {
         when(() => mockEngine.hasWon(spawnedBoard)).thenReturn(false);
         when(() => mockEngine.isGameOver(spawnedBoard)).thenReturn(false);
 
-        // Act
+        // When
         final result = useCase.call(initialBoard, Direction.right);
 
-        // Assert
+        // Then
         expect(result.moved, true);
         expect(result.scoreGained, 16);
         expect(result.status, GameStatus.playing);
@@ -109,9 +115,11 @@ void main() {
     );
 
     test(
-      'should return status won when a valid move results in reaching the winning tile',
+      '''Given a valid move that results in reaching the winning tile value
+When MakeMoveUseCase is called
+Then it should spawn a new tile and return a won status''',
       () {
-        // Arrange
+        // Given
         when(() => mockEngine.move(initialBoard, Direction.down)).thenReturn(
           MoveResult(board: movedBoard, scoreGained: 32, moved: true),
         );
@@ -119,12 +127,11 @@ void main() {
           () => mockEngine.spawnRandomTile(movedBoard),
         ).thenReturn(spawnedBoard);
         when(() => mockEngine.hasWon(spawnedBoard)).thenReturn(true);
-        // isGameOver não deve ser checado se hasWon for true baseado no fluxo do if/else if
 
-        // Act
+        // When
         final result = useCase.call(initialBoard, Direction.down);
 
-        // Assert
+        // Then
         expect(result.moved, true);
         expect(result.scoreGained, 32);
         expect(result.status, GameStatus.won);
@@ -133,9 +140,11 @@ void main() {
     );
 
     test(
-      'should return status gameOver when a valid move fills the board and leaves no available moves',
+      '''Given a valid move that completely fills the board leaving no available moves left
+When MakeMoveUseCase is called
+Then it should spawn a new tile and return a gameOver status''',
       () {
-        // Arrange
+        // Given
         when(() => mockEngine.move(initialBoard, Direction.left)).thenReturn(
           MoveResult(board: movedBoard, scoreGained: 4, moved: true),
         );
@@ -145,10 +154,10 @@ void main() {
         when(() => mockEngine.hasWon(spawnedBoard)).thenReturn(false);
         when(() => mockEngine.isGameOver(spawnedBoard)).thenReturn(true);
 
-        // Act
+        // When
         final result = useCase.call(initialBoard, Direction.left);
 
-        // Assert
+        // Then
         expect(result.moved, true);
         expect(result.scoreGained, 4);
         expect(result.status, GameStatus.gameOver);

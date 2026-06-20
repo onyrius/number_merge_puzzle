@@ -5,10 +5,6 @@ import '../../domain/value_objects/direction.dart';
 import 'game_state.dart';
 
 /// Cubit responsável pelo estado do jogo.
-/// Mesma responsabilidade do antigo GameController (ChangeNotifier),
-/// mas seguindo o padrão Cubit: cada ação emite um novo estado imutável
-/// através de `emit`, em vez de mutar campos e chamar notifyListeners().
-///
 /// Não tem NENHUMA regra de jogo aqui — só orquestra os use cases
 /// (camada de application) e empacota o resultado em um GameState.
 class GameCubit extends Cubit<GameState> {
@@ -31,10 +27,6 @@ class GameCubit extends Cubit<GameState> {
 
     final result = _makeMove(state.board, direction);
 
-    // Mesmo quando o movimento não altera o tabuleiro (result.moved == false),
-    // o use case pode ter detectado que o jogo acabou (ex: única linha vazia
-    // restante, mas sem espaço/merge possível nessa direção específica).
-    // Por isso NÃO retornamos cedo aqui — sempre emitimos o status atualizado.
     if (!result.moved && result.status == state.status) return;
 
     final newScore = state.score + result.scoreGained;
