@@ -1,17 +1,27 @@
-# number_merge_puzzle
+# 🧩 Number Merge Puzzle (  WIP )
 
-A new Flutter project.
+Uma aplicação mobil desenvolvida para o aprofundamento em Flutter, DDD e Clean Code, focada em mecânicas de quebra-cabeça e fusão de números.
+---
 
-## Getting Started
+## 🚀 Tecnologias & Arquitetura
 
-This project is a starting point for a Flutter application.
+O projeto adota uma divisão clara de responsabilidades para isolar a lógica de negócio da camada de interface:
 
-A few resources to get you started if this is your first Flutter project:
+*   **Flutter & Dart:** Desenvolvimento cross-platform nativo.
+*   **BLoC Pattern (State Management):** Fluxo de dados unidirecional e previsível para estados complexos do tabuleiro.
+*   **Clean Architecture:** Separação rígida em camadas (`Domain`, `Data`, e `Presentation`).
+*   **Very Good Analysis:** Padrões estritos de linting e análise estática de código.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📦 Estrutura do Projeto
+
+A estrutura de pastas reflete a separação por Features e Camadas de Domínio:
+
+```text
+lib/
+├── app/                  # Configurações globais, temas e rotas
+└── features/
+    └───├── data/         # Repositórios e fontes de dados (Locais/Remotos)
+        ├── domain/       # Entidades puras, Casos de Uso (Use Cases) e contratos
+        └── presentation/ # Widgets UI, Páginas e BLoCs (State, Event, Bloc)
