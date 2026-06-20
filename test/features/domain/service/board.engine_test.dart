@@ -207,4 +207,31 @@ void main() {
       expect(boardEngine.hasWon(winningBoard), true);
     });
   });
+  test(
+    'Should shift all pieces down without any merges when columns have no matching adjacent pairs',
+    () {
+      final inputBoard = Board([
+        [4, 8, 2, 8],
+        [16, 2, 4, 2],
+        [4, 8, 16, 32],
+        [0, 0, 0, 0], // Only the last row is free
+      ]);
+
+      final result = boardEngine.move(inputBoard, Direction.down);
+
+      final expectedGrid = [
+        [0, 0, 0, 0], // Top row becomes completely empty
+        [4, 8, 2, 8], // Row 0 shifted down to Row 1
+        [16, 2, 4, 2], // Row 1 shifted down to Row 2
+        [4, 8, 16, 32], // Row 2 shifted down to Row 3 (the bottom row)
+      ];
+
+      expect(result.board.grid, expectedGrid);
+      expect(result.scoreGained, 0); // No merges occurred
+      expect(
+        result.moved,
+        true,
+      ); // True, because pieces actually changed positions
+    },
+  );
 }

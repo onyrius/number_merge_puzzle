@@ -33,11 +33,15 @@ class MakeMoveUseCase {
     final moveResult = _engine.move(board, direction);
 
     if (!moveResult.moved) {
+      final status = _engine.isGameOver(board)
+          ? GameStatus.gameOver
+          : GameStatus.playing;
+
       return MakeMoveResult(
         board: board,
         scoreGained: 0,
         moved: false,
-        status: GameStatus.playing,
+        status: status,
       );
     }
 

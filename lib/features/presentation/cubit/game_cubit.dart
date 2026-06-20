@@ -1,8 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:number_merge_puzzle/features/application/use_cases/make_move_use_case.dart';
-import 'package:number_merge_puzzle/features/application/use_cases/start_new_game_use_case.dart';
-import 'package:number_merge_puzzle/features/domain/value_objects/direction.dart';
-
+import '../../application/use_cases/make_move_use_case.dart';
+import '../../application/use_cases/start_new_game_use_case.dart';
+import '../../domain/value_objects/direction.dart';
 import 'game_state.dart';
 
 /// Cubit responsável pelo estado do jogo.
@@ -31,7 +30,12 @@ class GameCubit extends Cubit<GameState> {
     if (state.status != GameStatus.playing) return;
 
     final result = _makeMove(state.board, direction);
-    if (!result.moved) return;
+
+    // Mesmo quando o movimento não altera o tabuleiro (result.moved == false),
+    // o use case pode ter detectado que o jogo acabou (ex: única linha vazia
+    // restante, mas sem espaço/merge possível nessa direção específica).
+    // Por isso NÃO retornamos cedo aqui — sempre emitimos o status atualizado.
+    if (!result.moved && result.status == state.status) return;
 
     final newScore = state.score + result.scoreGained;
     final newHighScore = newScore > state.highScore

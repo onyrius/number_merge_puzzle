@@ -54,7 +54,7 @@ class BoardEngine {
           moved: result.moved,
         );
       case Direction.down:
-        transformedBoard = _transpose(_reverse(transformedBoard));
+        transformedBoard = _reverse(_transpose(transformedBoard));
         final result = _moveLeft(transformedBoard);
         return MoveResult(
           board: _transpose(_reverse(result.board)),
