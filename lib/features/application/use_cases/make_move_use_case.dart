@@ -24,6 +24,7 @@ class MakeMoveResult {
 /// Orquestra o BoardEngine: move, spawna novo tile (se moveu) e checa o status do jogo.
 /// Essa é a "regra de aplicação" — o BoardEngine não sabe a ordem dessas etapas,
 /// só sabe executar cada uma isoladamente.
+/// Está na camada de application porque é a "lógica de orquestração" que conecta as regras de domínio (BoardEngine)
 class MakeMoveUseCase {
   final BoardEngine _engine;
 

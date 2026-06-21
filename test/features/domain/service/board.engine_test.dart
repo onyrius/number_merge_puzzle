@@ -5,9 +5,7 @@ import 'package:number_merge_puzzle/features/domain/entities/board.dart';
 import 'package:number_merge_puzzle/features/domain/service/board.engine.dart';
 import 'package:number_merge_puzzle/features/domain/value_objects/direction.dart';
 
-// Substitua pelos caminhos corretos do seu projeto:
-
-// Criamos um Mock para a classe Random do dart:math
+// Cria um Mock para a classe Random do dart:math
 class MockRandom extends Mock implements Random {}
 
 void main() {
@@ -16,11 +14,11 @@ void main() {
 
   setUp(() {
     mockRandom = MockRandom();
-    // Injetamos o mock do Random no motor do jogo
+    // Injeta o mock do Random no motor do jogo
     boardEngine = BoardEngine(random: mockRandom);
   });
 
-  group('BoardEngine - Movimentação Básica e Fusões', () {
+  group('BoardEngine - Basic Movement and Merges', () {
     test(
       'GIVEN a board with mergeable pairs and zeros in rows\n'
       'WHEN move is called with Direction.left\n'
@@ -119,7 +117,7 @@ void main() {
     });
   });
 
-  group('BoardEngine - spawnRandomTile (Aleatoriedade Controlada)', () {
+  group('BoardEngine - spawnRandomTile (Controlled Randomness)', () {
     test('GIVEN a board with empty cells and a random choice favoring the 90% chance\n'
         'WHEN spawnRandomTile is called\n'
         'THEN it should spawn the number 2 in the designated empty cell', () {
@@ -133,7 +131,7 @@ void main() {
       // Mockando o Random:
       // Como só há 1 célula vazia, empty.length será 1. random.nextInt(1) retorna 0.
       when(() => mockRandom.nextInt(1)).thenReturn(0);
-      // nextDouble() < 0.9 gera o número 2. Forçamos retornar 0.5 (menor que 0.9).
+      // nextDouble() < 0.9 gera o número 2. Força retornar 0.5 (menor que 0.9).
       when(() => mockRandom.nextDouble()).thenReturn(0.5);
 
       final newBoard = boardEngine.spawnRandomTile(inputBoard);
@@ -154,7 +152,7 @@ void main() {
         ]);
 
         when(() => mockRandom.nextInt(1)).thenReturn(0);
-        // Forçamos retornar 0.95 (maior que 0.9), gerando o número 4.
+        // Força retornar 0.95 (maior que 0.9), gerando o número 4.
         when(() => mockRandom.nextDouble()).thenReturn(0.95);
 
         final newBoard = boardEngine.spawnRandomTile(inputBoard);
@@ -179,7 +177,7 @@ void main() {
     });
   });
 
-  group('BoardEngine - Condições de Fim e Vitória', () {
+  group('BoardEngine - End Conditions and Victory', () {
     test('GIVEN a full board with absolutely no available moves or merges left\n'
         'WHEN isGameOver is checked\n'
         'THEN it should return true', () {
