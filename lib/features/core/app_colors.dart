@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Centraliza todas as cores do jogo. Evita "magic colors" espalhadas pela UI.
 class AppColors {
-  AppColors._();
+  AppColors._(); // coverage:ignore-line
 
   static const Color background = Color(0xFF1E1E24);
   static const Color boardBackground = Color(0xFF111115);
