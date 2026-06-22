@@ -1,4 +1,6 @@
-# 🧩 Number Merge Puzzle (  WIP )
+# 🧩 Number Merge Puzzle (WIP)
+
+Uma aplicação Flutter para estudar DDD, Clean Architecture, BLoC e boas práticas de testes, usando uma mecânica inspirada em quebra-cabeças de fusão de números.
 
 ### 🛠️ Autor
 
@@ -6,33 +8,52 @@
   Developed with 💜 by <b>onyrius</b> - Suelen Arruda
 </p>
 
-
-Uma aplicação desenvolvida para o aprofundamento em Flutter, DDD e Clean Code, focada em mecânicas de quebra-cabeça e fusão de números.
 ---
 
 ## 🚀 Tecnologias & Arquitetura
 
-O projeto adota uma divisão clara de responsabilidades para isolar a lógica de negócio da camada de interface:
+O projeto adota uma divisão clara de responsabilidades para isolar regra de negócio, orquestração de casos de uso, persistência e interface:
 
-*   **Flutter & Dart:** Desenvolvimento cross-platform nativo.
-*   **BLoC Pattern (State Management):** Fluxo de dados unidirecional e previsível para estados complexos do tabuleiro.
-*   **Clean Architecture:** Separação rígida em camadas (`Domain`, `Data`, e `Presentation`).
-*   **Very Good Analysis:** Padrões estritos de linting e análise estática de código.
+* **Flutter & Dart:** desenvolvimento cross-platform.
+* **BLoC/Cubit:** gerenciamento de estado da partida e fluxo de interação da UI.
+* **Clean Architecture:** separação entre domínio, aplicação, infraestrutura e apresentação.
+* **DDD:** entidades, value objects, serviços de domínio e contratos de repositório.
+* **Testes automatizados:** cobertura para domínio, casos de uso, widgets, Cubit e infraestrutura.
+* **Flutter Lints:** análise estática baseada no pacote `flutter_lints`.
 
 ---
 
 ## 📦 Estrutura do Projeto
 
-A estrutura de pastas reflete a separação por Features e Camadas de Domínio:
+A estrutura de pastas reflete a separação por camadas:
 
 ```text
 lib/
-├── app/                  # Configurações globais, temas e rotas
-└── features/
-    └───├── data/         # Repositórios e fontes de dados (Locais/Remotos)
-        ├── domain/       # Entidades puras, Casos de Uso (Use Cases) e contratos
-        └── presentation/ # Widgets UI, Páginas e BLoCs (State, Event, Bloc)
+├── features/
+│   ├── core/              # Constantes globais de UI, cores, textos e dimensões
+│   ├── application/       # Casos de uso que orquestram regras de domínio
+│   ├── domain/            # Entidades, value objects, contratos e serviços puros
+│   └── presentation/      # Screens, widgets e Cubit/State da interface
+├── infrastructure/        # Implementações externas, como persistência local
+└── main.dart              # Bootstrap da aplicação e injeção das dependências
 
+test/
+├── features/              # Testes das camadas de feature
+└── infrastructure/        # Testes de adaptadores de infraestrutura
+```
 
+---
 
+## ▶️ Como Rodar
 
+```bash
+flutter pub get
+flutter run
+```
+
+## ✅ Qualidade
+
+```bash
+flutter analyze
+flutter test
+```
