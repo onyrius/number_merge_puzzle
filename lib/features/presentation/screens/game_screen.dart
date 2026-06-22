@@ -8,6 +8,7 @@ import 'package:number_merge_puzzle/features/presentation/cubit/game_cubit.dart'
 import 'package:number_merge_puzzle/features/presentation/cubit/game_state.dart';
 import 'package:number_merge_puzzle/features/presentation/widgets/game_board_widget.dart';
 import 'package:number_merge_puzzle/features/presentation/widgets/game_over_dialog.dart';
+import 'package:number_merge_puzzle/features/presentation/widgets/how_to_play_dialog.dart';
 import 'package:number_merge_puzzle/features/presentation/widgets/score_card_widget.dart';
 import 'package:number_merge_puzzle/infrastructure/keyboard_input_handler.dart';
 
@@ -177,13 +178,28 @@ class _GameScreenState extends State<GameScreen> {
                         },
                       ),
                       const SizedBox(height: AppDimensions.sectionSpacing),
-                      IconButton(
-                        onPressed: () => context.read<GameCubit>().resetGame(),
-                        icon: const Icon(
-                          Icons.refresh_rounded,
-                          size: AppDimensions.refreshIconSize,
-                        ),
-                        color: Colors.white70,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () =>
+                                context.read<GameCubit>().resetGame(),
+                            icon: const Icon(
+                              Icons.refresh_rounded,
+                              size: AppDimensions.refreshIconSize,
+                            ),
+                            color: Colors.white70,
+                          ),
+                          const SizedBox(width: AppDimensions.compactSpacing),
+                          IconButton(
+                            onPressed: () => showHowToPlayDialog(context),
+                            icon: const Icon(
+                              Icons.info_outline,
+                              size: AppDimensions.actionIconSize,
+                            ),
+                            color: Colors.white70,
+                          ),
+                        ],
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(

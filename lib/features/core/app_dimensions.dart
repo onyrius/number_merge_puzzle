@@ -9,6 +9,7 @@ class AppDimensions {
 
   static const double sectionSpacing = 16;
   static const double compactSpacing = 8;
+  static const double dialogContentSpacing = 12;
   static const double headerTitleScoreSpacing = 12;
   static const double headerTitleVerticalPadding = 16;
   static const double scoreCardHorizontalPadding = 16;
@@ -29,6 +30,7 @@ class AppDimensions {
   static const double compactTileFontSize = 20;
   static const double compactDeveloperCreditFontSize = 11;
   static const double developerCreditFontSize = 12;
+  static const double actionIconSize = 36;
   static const double refreshIconSize = 36;
 
   static const double titleLetterSpacing = 1.2;
