@@ -9,6 +9,10 @@ class AppColors {
   static const Color boardBackground = Color(0xFF111115);
   static const Color emptyTile = Color(0xFF25252B);
   static const Color scoreCardBackground = Color(0xFF25252B);
+  static const Color developerCreditText = Colors.white54;
+  static const Color titleLightText = Colors.white70;
+  static const Color titleStrongText = Colors.white;
+  static const double developerCreditTextOpacity = 0.3;
 
   static const Map<int, Color> tileColors = {
     Board.baseTileValue: Color(0xFF3A363F),
