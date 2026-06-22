@@ -15,6 +15,7 @@ void main() {
   runApp(const NumberMergeGame());
 }
 
+/// A aplicação principal do jogo Number Merge Puzzle, que configura o tema e a estrutura básica do app.
 class NumberMergeGame extends StatelessWidget {
   const NumberMergeGame({super.key});
 
