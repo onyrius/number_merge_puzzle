@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:number_merge_puzzle/features/application/use_cases/make_move_use_case.dart';
+import 'package:number_merge_puzzle/features/core/app_strings.dart';
 import 'package:number_merge_puzzle/features/domain/entities/board.dart';
 import 'package:number_merge_puzzle/features/presentation/cubit/game_cubit.dart';
 import 'package:number_merge_puzzle/features/presentation/cubit/game_state.dart';
@@ -52,14 +53,22 @@ void main() {
 
         await tester.pumpWidget(createWidgetUnderTest());
 
-        expect(find.text('Merge\nLogic'), findsOneWidget);
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is RichText &&
+                widget.text.toPlainText() ==
+                    '${AppStrings.gameTitleLight}${AppStrings.gameTitleStrong}',
+          ),
+          findsOneWidget,
+        );
         expect(find.byType(GameBoardWidget), findsOneWidget);
 
         expect(
           find.byWidgetPredicate(
             (widget) =>
                 widget is ScoreCardWidget &&
-                widget.title == 'SCORE' &&
+                widget.title == AppStrings.scoreLabel &&
                 widget.value == 100,
           ),
           findsOneWidget,
@@ -68,7 +77,7 @@ void main() {
           find.byWidgetPredicate(
             (widget) =>
                 widget is ScoreCardWidget &&
-                widget.title == 'BEST' &&
+                widget.title == AppStrings.bestScoreLabel &&
                 widget.value == 500,
           ),
           findsOneWidget,
@@ -122,8 +131,8 @@ void main() {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      expect(find.text('Game Over!'), findsOneWidget);
-      expect(find.text('Pontuação: 150'), findsOneWidget);
+      expect(find.text(AppStrings.gameOverTitle), findsOneWidget);
+      expect(find.text('${AppStrings.scorePrefix}: 150'), findsOneWidget);
     });
   });
 }
