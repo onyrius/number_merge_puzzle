@@ -42,6 +42,40 @@ jobs:
       - name: Run Unit & Widget Tests
         run: flutter test --coverage
 
+      - name: Check coverage threshold
+        run: |
+          if [ ! -f coverage/lcov.info ]; then
+            echo "coverage/lcov.info not found";
+            exit 1;
+          fi
+          read covered total <<< $(awk -F, '/^DA:/ {total++; if($2>0) covered++} END {print covered" "total}' coverage/lcov.info)
+          if [ -z "$total" ] || [ "$total" -eq 0 ]; then
+            echo "No instrumented lines found in coverage report";
+            exit 1;
+          fi
+          percent=$((100*covered/total))
+          echo "Code coverage: $percent% ($covered/$total)"
+          if [ "$percent" -lt 75 ]; then
+            echo "Coverage $percent% is below threshold (75%)";
+            exit 1;
+          fi
+
+      # Upload coverage report as an artifact so it can be downloaded from the workflow run
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
+
+      # Optional: publish coverage to Codecov (will work for public repos or when CODECOV_TOKEN is set)
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage/lcov.info
+          fail_ci_if_error: true
+
       # 7. (Opcional) Mostra o resumo da cobertura direto no log da pipeline
       - name: Report Code Coverage
         uses: dorny/paths-filter@v3
