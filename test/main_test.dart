@@ -4,18 +4,17 @@ import 'package:number_merge_puzzle/main.dart' as app;
 
 void main() {
   group('main - App Bootstrap', () {
-    testWidgets(
-      'GIVEN the production main entrypoint\n'
-      'WHEN main is called\n'
-      'THEN it should run the NumberMergeGame app',
-      (WidgetTester tester) async {
-        app.main();
-        await tester.pumpAndSettle();
+    testWidgets('GIVEN the production main entrypoint\n'
+        'WHEN main is called\n'
+        'THEN it should run the NumberMergeGame app', (
+      WidgetTester tester,
+    ) async {
+      app.main();
+      await tester.pumpAndSettle();
 
-        expect(find.byType(app.NumberMergeGame), findsOneWidget);
-        expect(find.byType(GameScreen), findsOneWidget);
-      },
-    );
+      expect(find.byType(app.NumberMergeGame), findsOneWidget);
+      expect(find.byType(GameScreen), findsOneWidget);
+    });
   });
 
   group('NumberMergeGame - Application Initialization', () {
