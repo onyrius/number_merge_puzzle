@@ -1,0 +1,52 @@
+name: Flutter Analyze & Test
+
+on:
+  pull_request:
+    branches: [ main, master, development ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Faz o checkout do código do repositório para dentro da máquina virtual
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Configura o ambiente Java (necessário para ferramentas do ecossistema Android/Flutter)
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 3. Configura o Flutter na máquina virtual (usa a versão estável mais recente)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true # Ativa o cache para baixar os pacotes mais rápido nas próximas vezes
+
+      # 4. Baixa todas as dependências do projeto (pub get)
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 5. EXECUÇÃO DO CÓDIGO LIMPO: Verifica regras do Linter e formatação
+      - name: Run Flutter Analyzer
+        run: flutter analyze
+
+      - name: Check Formatting
+        run: flutter format --set-exit-if-changed lib test
+
+      # 6. EXECUÇÃO DOS TESTES: Roda toda a nossa suíte de testes com cobertura
+      - name: Run Unit & Widget Tests
+        run: flutter test --coverage
+
+      # 7. (Opcional) Mostra o resumo da cobertura direto no log da pipeline
+      - name: Report Code Coverage
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            coverage:
+              - 'coverage/lcov.info'
