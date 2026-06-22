@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:number_merge_puzzle/features/domain/repositores/game_repository.dart';
+import 'package:number_merge_puzzle/features/domain/value_objects/game_score.dart';
 import 'package:number_merge_puzzle/features/domain/value_objects/saved_game.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/domain/entities/board.dart';
@@ -35,8 +36,8 @@ class SharedPrefsGameRepository implements GameRepository {
           .map((row) => (row as List<dynamic>).cast<int>())
           .toList();
 
-      final score = prefs.getInt(_scoreKey) ?? 0;
-      final highScore = prefs.getInt(_highScoreKey) ?? 0;
+      final score = prefs.getInt(_scoreKey) ?? GameScore.initial;
+      final highScore = prefs.getInt(_highScoreKey) ?? GameScore.initial;
 
       return SavedGame(board: Board(grid), score: score, highScore: highScore);
     } catch (_) {

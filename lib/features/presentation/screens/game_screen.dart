@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:number_merge_puzzle/features/application/use_cases/make_move_use_case.dart';
+import 'package:number_merge_puzzle/features/core/app_dimensions.dart';
+import 'package:number_merge_puzzle/features/core/app_strings.dart';
 import 'package:number_merge_puzzle/features/presentation/cubit/game_cubit.dart';
 import 'package:number_merge_puzzle/features/presentation/cubit/game_state.dart';
 import 'package:number_merge_puzzle/features/presentation/widgets/game_board_widget.dart';
@@ -41,8 +43,8 @@ class _GameScreenState extends State<GameScreen> {
     final isWin = status == GameStatus.won;
     showGameOverDialog(
       context: context,
-      title: isWin ? '🎉 Você venceu!' : 'Game Over!',
-      content: 'Pontuação: $score',
+      title: isWin ? AppStrings.winTitle : AppStrings.gameOverTitle,
+      content: '${AppStrings.scorePrefix}: $score',
       onPlayAgain: () => context.read<GameCubit>().resetGame(),
     );
   }
@@ -50,7 +52,12 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final boardSize = screenWidth.clamp(0.0, 400.0) - 40;
+    final boardSize =
+        screenWidth.clamp(
+          AppDimensions.minBoardSize,
+          AppDimensions.maxBoardSize,
+        ) -
+        AppDimensions.boardHorizontalMargin;
 
     return Scaffold(
       body: SafeArea(
@@ -73,9 +80,11 @@ class _GameScreenState extends State<GameScreen> {
             },
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(AppDimensions.screenPadding),
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
+                  constraints: const BoxConstraints(
+                    maxWidth: AppDimensions.maxContentWidth,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -86,22 +95,25 @@ class _GameScreenState extends State<GameScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                'Merge\nLogic',
+                                AppStrings.gameTitle,
                                 style: TextStyle(
-                                  fontSize: 32,
+                                  fontSize: AppDimensions.titleFontSize,
                                   fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.2,
+                                  letterSpacing:
+                                      AppDimensions.titleLetterSpacing,
                                 ),
                               ),
                               Row(
                                 children: [
                                   ScoreCardWidget(
-                                    title: 'SCORE',
+                                    title: AppStrings.scoreLabel,
                                     value: state.score,
                                   ),
-                                  const SizedBox(width: 8),
+                                  const SizedBox(
+                                    width: AppDimensions.compactSpacing,
+                                  ),
                                   ScoreCardWidget(
-                                    title: 'BEST',
+                                    title: AppStrings.bestScoreLabel,
                                     value: state.highScore,
                                   ),
                                 ],
@@ -110,12 +122,15 @@ class _GameScreenState extends State<GameScreen> {
                           );
                         },
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppDimensions.sectionSpacing),
                       const Text(
-                        '← → ↑ ↓  ou  arraste na tela',
-                        style: TextStyle(fontSize: 12, color: Colors.white38),
+                        AppStrings.inputHint,
+                        style: TextStyle(
+                          fontSize: AppDimensions.hintFontSize,
+                          color: Colors.white38,
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppDimensions.sectionSpacing),
                       BlocBuilder<GameCubit, GameState>(
                         buildWhen: (previous, current) =>
                             previous.board != current.board,
@@ -127,10 +142,13 @@ class _GameScreenState extends State<GameScreen> {
                           );
                         },
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppDimensions.sectionSpacing),
                       IconButton(
                         onPressed: () => context.read<GameCubit>().resetGame(),
-                        icon: const Icon(Icons.refresh_rounded, size: 36),
+                        icon: const Icon(
+                          Icons.refresh_rounded,
+                          size: AppDimensions.refreshIconSize,
+                        ),
                         color: Colors.white70,
                       ),
                     ],

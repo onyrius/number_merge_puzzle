@@ -4,6 +4,7 @@ import '../../application/use_cases/make_move_use_case.dart';
 import '../../application/use_cases/save_game_use_case.dart';
 import '../../application/use_cases/start_new_game_use_case.dart';
 import '../../domain/value_objects/direction.dart';
+import '../../domain/value_objects/game_score.dart';
 import 'game_state.dart';
 
 class GameCubit extends Cubit<GameState> {
@@ -13,15 +14,11 @@ class GameCubit extends Cubit<GameState> {
   final LoadGameUseCase _loadGame;
 
   GameCubit({
-    required StartNewGameUseCase startNewGame,
-    required MakeMoveUseCase makeMove,
-    required SaveGameUseCase saveGame,
-    required LoadGameUseCase loadGame,
-  }) : _startNewGame = startNewGame,
-       _makeMove = makeMove,
-       _saveGame = saveGame,
-       _loadGame = loadGame,
-       super(GameState.initial()) {
+    required this._startNewGame,
+    required this._makeMove,
+    required this._saveGame,
+    required this._loadGame,
+  }) : super(GameState.initial()) {
     _loadGameOrStartNew();
   }
 
@@ -33,8 +30,8 @@ class GameCubit extends Cubit<GameState> {
       emit(
         state.copyWith(
           board: board,
-          score: 0,
-          highScore: 0,
+          score: GameScore.initial,
+          highScore: GameScore.initial,
           status: GameStatus.playing,
           isLoading: false,
         ),
@@ -57,7 +54,7 @@ class GameCubit extends Cubit<GameState> {
     final board = _startNewGame();
     final newState = state.copyWith(
       board: board,
-      score: 0,
+      score: GameScore.initial,
       status: GameStatus.playing,
       isLoading: false,
     );

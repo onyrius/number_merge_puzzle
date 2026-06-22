@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:number_merge_puzzle/features/core/app_colors.dart';
+import 'package:number_merge_puzzle/features/core/app_dimensions.dart';
 import 'package:number_merge_puzzle/features/domain/entities/board.dart';
 import 'package:number_merge_puzzle/features/domain/value_objects/direction.dart';
 import 'package:number_merge_puzzle/infrastructure/swipe_input_handler.dart';
@@ -40,18 +41,18 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       child: Container(
         width: widget.size,
         height: widget.size,
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(AppDimensions.boardPadding),
         decoration: BoxDecoration(
           color: AppColors.boardBackground,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimensions.boardRadius),
         ),
         child: GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: Board.size,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
+            crossAxisSpacing: AppDimensions.compactSpacing,
+            mainAxisSpacing: AppDimensions.compactSpacing,
           ),
           itemCount: Board.size * Board.size,
           itemBuilder: (context, index) {

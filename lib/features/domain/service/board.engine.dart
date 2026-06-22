@@ -1,6 +1,7 @@
 import 'dart:math';
 import '../entities/board.dart';
 import '../value_objects/direction.dart';
+import '../value_objects/game_score.dart';
 import '../value_objects/tile_position.dart';
 
 /// Resultado de uma jogada: novo tabuleiro, pontos ganhos e se algo mudou.
@@ -20,6 +21,8 @@ class MoveResult {
 /// Não conhece Flutter, widgets, nem nada de UI.
 /// Pode ser testado isoladamente com testes unitários simples.
 class BoardEngine {
+  static const double baseTileSpawnChance = 0.9;
+
   final Random _random;
 
   // Injeção opcional de dependência com fallback padrão.
@@ -67,18 +70,20 @@ class BoardEngine {
   /// Regra central do jogo: comprime e funde valores iguais para a esquerda.
   MoveResult _moveLeft(Board board) {
     bool moved = false;
-    int scoreGained = 0;
+    int scoreGained = GameScore.initial;
     final newGrid = <List<int>>[];
 
     for (int row = 0; row < Board.size; row++) {
       final originalBoard = board.grid[row];
-      final compactBoard = originalBoard.where((value) => value != 0).toList();
+      final compactBoard = originalBoard
+          .where((value) => value != Board.emptyCellValue)
+          .toList();
       final merged = <int>[];
 
       for (int i = 0; i < compactBoard.length; i++) {
         if (i + 1 < compactBoard.length &&
             compactBoard[i] == compactBoard[i + 1]) {
-          final value = compactBoard[i] * 2;
+          final value = compactBoard[i] * Board.baseTileValue;
           merged.add(value);
           scoreGained += value;
           i++;
@@ -89,7 +94,7 @@ class BoardEngine {
       }
 
       while (merged.length < Board.size) {
-        merged.add(0);
+        merged.add(Board.emptyCellValue);
       }
 
       if (!_listEquals(merged, originalBoard)) moved = true;
@@ -110,7 +115,7 @@ class BoardEngine {
   Board _transpose(Board board) {
     final newGrid = List.generate(
       Board.size,
-      (_) => List.generate(Board.size, (_) => 0),
+      (_) => List.generate(Board.size, (_) => Board.emptyCellValue),
     );
     for (int row = 0; row < Board.size; row++) {
       for (int col = 0; col < Board.size; col++) {
@@ -128,14 +133,16 @@ class BoardEngine {
     return true;
   }
 
-  /// Sorteia uma posição vazia e insere um novo tile (2 com 90% de chance, 4 com 10%).
+  /// Sorteia uma posição vazia e insere um novo tile.
   /// Retorna o mesmo board (mutado) — usado pelo use case de spawn.
   Board spawnRandomTile(Board board) {
     final empty = board.emptyCells;
     if (empty.isEmpty) return board;
 
     final TilePosition pos = empty[_random.nextInt(empty.length)];
-    final value = _random.nextDouble() < 0.9 ? 2 : 4;
+    final value = _random.nextDouble() < baseTileSpawnChance
+        ? Board.baseTileValue
+        : Board.rareTileValue;
     final newBoard = board.copy();
     newBoard.setValueAt(pos, value);
     return newBoard;
@@ -147,7 +154,7 @@ class BoardEngine {
     return !board.hasAdjacentEqualCells;
   }
 
-  bool hasWon(Board board, {int winValue = 2048}) {
+  bool hasWon(Board board, {int winValue = Board.defaultWinValue}) {
     return board.containsValue(winValue);
   }
 }

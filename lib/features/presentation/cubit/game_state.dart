@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import '../../application/use_cases/make_move_use_case.dart';
 import '../../domain/entities/board.dart';
+import '../../domain/value_objects/game_score.dart';
 
 class GameState extends Equatable {
   final Board board;
@@ -22,8 +23,8 @@ class GameState extends Equatable {
   factory GameState.initial() {
     return GameState(
       board: Board.empty(),
-      score: 0,
-      highScore: 0,
+      score: GameScore.initial,
+      highScore: GameScore.initial,
       status: GameStatus.playing,
       isLoading: true,
     );

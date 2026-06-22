@@ -1,6 +1,7 @@
 import 'package:number_merge_puzzle/features/domain/entities/board.dart';
 import 'package:number_merge_puzzle/features/domain/service/board.engine.dart';
 import 'package:number_merge_puzzle/features/domain/value_objects/direction.dart';
+import 'package:number_merge_puzzle/features/domain/value_objects/game_score.dart';
 
 /// Status do jogo após uma jogada.
 enum GameStatus { playing, won, gameOver }
@@ -40,7 +41,7 @@ class MakeMoveUseCase {
 
       return MakeMoveResult(
         board: board,
-        scoreGained: 0,
+        scoreGained: GameScore.initial,
         moved: false,
         status: status,
       );

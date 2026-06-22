@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:number_merge_puzzle/features/core/app_strings.dart';
 
 /// Mostra o diálogo de fim de jogo (vitória ou derrota).
 /// É uma função utilitária de UI, sem estado próprio.
@@ -19,7 +20,7 @@ void showGameOverDialog({
             Navigator.pop(context);
             onPlayAgain();
           },
-          child: const Text('Jogar Novamente'),
+          child: const Text(AppStrings.playAgain),
         ),
       ],
     ),
