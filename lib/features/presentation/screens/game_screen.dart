@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:number_merge_puzzle/features/application/use_cases/make_move_use_case.dart';
+import 'package:number_merge_puzzle/features/core/app_colors.dart';
 import 'package:number_merge_puzzle/features/core/app_dimensions.dart';
 import 'package:number_merge_puzzle/features/core/app_strings.dart';
 import 'package:number_merge_puzzle/features/presentation/cubit/game_cubit.dart';
@@ -92,16 +93,49 @@ class _GameScreenState extends State<GameScreen> {
                       BlocBuilder<GameCubit, GameState>(
                         builder: (context, state) {
                           return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const Text(
-                                AppStrings.gameTitle,
-                                style: TextStyle(
-                                  fontSize: AppDimensions.titleFontSize,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing:
-                                      AppDimensions.titleLetterSpacing,
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: AppDimensions
+                                        .headerTitleVerticalPadding,
+                                  ),
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: RichText(
+                                      text: const TextSpan(
+                                        style: TextStyle(
+                                          fontSize: AppDimensions.titleFontSize,
+                                          letterSpacing:
+                                              AppDimensions.titleLetterSpacing,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: AppStrings.gameTitleLight,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight
+                                                  .w200, // Fino e elegante
+                                              color: AppColors.titleLightText,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: AppStrings.gameTitleStrong,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight
+                                                  .w800, // Grosso e marcante
+                                              color: AppColors.titleStrongText,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
+                              ),
+                              const SizedBox(
+                                width: AppDimensions.headerTitleScoreSpacing,
                               ),
                               Row(
                                 children: [
@@ -150,6 +184,24 @@ class _GameScreenState extends State<GameScreen> {
                           size: AppDimensions.refreshIconSize,
                         ),
                         color: Colors.white70,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppDimensions.sectionSpacing,
+                        ),
+                        child: Text(
+                          AppStrings.developerCredit,
+                          style: TextStyle(
+                            fontSize:
+                                AppDimensions.compactDeveloperCreditFontSize,
+                            fontWeight: FontWeight.w200, // Fonte ultra fina
+                            letterSpacing:
+                                AppDimensions.developerCreditLetterSpacing,
+                            color: AppColors.developerCreditText.withValues(
+                              alpha: AppColors.developerCreditTextOpacity,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),

@@ -25,3 +25,9 @@ lib/
     └───├── data/         # Repositórios e fontes de dados (Locais/Remotos)
         ├── domain/       # Entidades puras, Casos de Uso (Use Cases) e contratos
         └── presentation/ # Widgets UI, Páginas e BLoCs (State, Event, Bloc)
+        ---
+### 🛠️ Autor
+
+<p align="center">
+  Developed with 💜 by <b>onyrius</b> - Suelen Arruda
+</p>
