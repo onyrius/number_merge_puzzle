@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:number_merge_puzzle/features/domain/entities/board.dart';
 
-/// Centraliza todas as cores do jogo. Evita "magic colors" espalhadas pela UI.
 class AppColors {
-  AppColors._(); // coverage:ignore-line
+  AppColors._();
+  static const int lightTextMaxTileValue = 8;
 
   static const Color background = Color(0xFF1E1E24);
   static const Color boardBackground = Color(0xFF111115);
@@ -10,8 +11,8 @@ class AppColors {
   static const Color scoreCardBackground = Color(0xFF25252B);
 
   static const Map<int, Color> tileColors = {
-    2: Color(0xFF3A363F),
-    4: Color(0xFF4A4E69),
+    Board.baseTileValue: Color(0xFF3A363F),
+    Board.rareTileValue: Color(0xFF4A4E69),
     8: Color(0xFF9A8C98),
     16: Color(0xFFC9ADA7),
     32: Color(0xFFF2E9E4),
@@ -28,6 +29,6 @@ class AppColors {
   }
 
   static Color textColorFor(int value) {
-    return value <= 8 ? Colors.white70 : Colors.black87;
+    return value <= lightTextMaxTileValue ? Colors.white70 : Colors.black87;
   }
 }

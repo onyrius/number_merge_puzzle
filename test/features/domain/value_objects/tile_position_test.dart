@@ -38,9 +38,8 @@ void main() {
         'WHEN they are compared using operator ==\n'
         'THEN they should not be considered equal', () {
       final position = TilePosition(0, 0);
-      final diffType = {'row': 0, 'col': 0};
+      final Object diffType = {'row': 0, 'col': 0};
 
-      // ignore: unrelated_type_equality_checks
       expect(position == diffType, isFalse);
     });
   });

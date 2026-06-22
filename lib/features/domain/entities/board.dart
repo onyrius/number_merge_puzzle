@@ -6,6 +6,10 @@ import '../value_objects/tile_position.dart';
 /// Seguindo o DDD, é uma entidade do domínio: tem identidade própria (a matriz) e regras de negócio (movimentos, merges, etc).
 class Board {
   static const int size = 4;
+  static const int emptyCellValue = 0;
+  static const int baseTileValue = 2;
+  static const int rareTileValue = 4;
+  static const int defaultWinValue = 2048;
 
   /// Matriz size x size. board[row][col].
   final List<List<int>> grid;
@@ -14,7 +18,9 @@ class Board {
 
   /// Cria um tabuleiro vazio (todas as células em 0).
   factory Board.empty() {
-    return Board(List.generate(size, (_) => List.generate(size, (_) => 0)));
+    return Board(
+      List.generate(size, (_) => List.generate(size, (_) => emptyCellValue)),
+    );
   }
 
   /// Cria uma cópia profunda do tabuleiro (importante para imutabilidade).
@@ -28,13 +34,13 @@ class Board {
     grid[pos.row][pos.col] = value;
   }
 
-  bool get hasEmptyCell => grid.any((row) => row.contains(0));
+  bool get hasEmptyCell => grid.any((row) => row.contains(emptyCellValue));
 
   List<TilePosition> get emptyCells {
     final List<TilePosition> cells = [];
     for (int rowIndex = 0; rowIndex < size; rowIndex++) {
       for (int colIndex = 0; colIndex < size; colIndex++) {
-        if (grid[rowIndex][colIndex] == 0) {
+        if (grid[rowIndex][colIndex] == emptyCellValue) {
           cells.add(TilePosition(rowIndex, colIndex));
         }
       }

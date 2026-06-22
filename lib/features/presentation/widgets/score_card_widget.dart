@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:number_merge_puzzle/features/core/app_colors.dart';
+import 'package:number_merge_puzzle/features/core/app_dimensions.dart';
 
 /// Card que exibe um rótulo e um valor (usado para SCORE e BEST).
 class ScoreCardWidget extends StatelessWidget {
@@ -11,27 +12,32 @@ class ScoreCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      constraints: const BoxConstraints(minWidth: 80),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.scoreCardHorizontalPadding,
+        vertical: AppDimensions.scoreCardVerticalPadding,
+      ),
+      constraints: const BoxConstraints(
+        minWidth: AppDimensions.scoreCardMinWidth,
+      ),
       decoration: BoxDecoration(
         color: AppColors.scoreCardBackground,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppDimensions.scoreCardRadius),
       ),
       child: Column(
         children: [
           Text(
             title,
             style: const TextStyle(
-              fontSize: 10,
+              fontSize: AppDimensions.scoreTitleFontSize,
               color: Colors.white38,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppDimensions.compactSpacing / 2),
           Text(
             '$value',
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: AppDimensions.scoreValueFontSize,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
