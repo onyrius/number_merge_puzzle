@@ -1,6 +1,13 @@
 # 🧩 Number Merge Puzzle (  WIP )
 
-Uma aplicação mobil desenvolvida para o aprofundamento em Flutter, DDD e Clean Code, focada em mecânicas de quebra-cabeça e fusão de números.
+### 🛠️ Autor
+
+<p align="center">
+  Developed with 💜 by <b>onyrius</b> - Suelen Arruda
+</p>
+
+
+Uma aplicação desenvolvida para o aprofundamento em Flutter, DDD e Clean Code, focada em mecânicas de quebra-cabeça e fusão de números.
 ---
 
 ## 🚀 Tecnologias & Arquitetura
@@ -25,9 +32,7 @@ lib/
     └───├── data/         # Repositórios e fontes de dados (Locais/Remotos)
         ├── domain/       # Entidades puras, Casos de Uso (Use Cases) e contratos
         └── presentation/ # Widgets UI, Páginas e BLoCs (State, Event, Bloc)
-        ---
-### 🛠️ Autor
 
-<p align="center">
-  Developed with 💜 by <b>onyrius</b> - Suelen Arruda
-</p>
+
+
+
