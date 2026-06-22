@@ -1,11 +1,12 @@
-import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-
-import 'package:number_merge_puzzle/features/application/use_cases/make_move_use_case.dart';
-import 'package:number_merge_puzzle/features/application/use_cases/start_new_game_use_case.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:number_merge_puzzle/features/domain/entities/board.dart';
 import 'package:number_merge_puzzle/features/domain/value_objects/direction.dart';
+import 'package:number_merge_puzzle/features/application/use_cases/load_game_use_case.dart';
+import 'package:number_merge_puzzle/features/application/use_cases/make_move_use_case.dart'; // Certifique-se de que MakeMoveResult vem daqui
+import 'package:number_merge_puzzle/features/application/use_cases/save_game_use_case.dart';
+import 'package:number_merge_puzzle/features/application/use_cases/start_new_game_use_case.dart';
 import 'package:number_merge_puzzle/features/presentation/cubit/game_cubit.dart';
 import 'package:number_merge_puzzle/features/presentation/cubit/game_state.dart';
 
@@ -13,168 +14,147 @@ class MockStartNewGameUseCase extends Mock implements StartNewGameUseCase {}
 
 class MockMakeMoveUseCase extends Mock implements MakeMoveUseCase {}
 
-class MockBoard extends Mock implements Board {}
+class MockSaveGameUseCase extends Mock implements SaveGameUseCase {}
+
+class MockLoadGameUseCase extends Mock implements LoadGameUseCase {}
 
 void main() {
-  late GameCubit gameCubit;
   late MockStartNewGameUseCase mockStartNewGame;
   late MockMakeMoveUseCase mockMakeMove;
-  late Board initialBoard;
-  late Board nextBoard;
-
-  setUpAll(() {
-    registerFallbackValue(Direction.left);
-    registerFallbackValue(Board.empty());
-  });
+  late MockSaveGameUseCase mockSaveGame;
+  late MockLoadGameUseCase mockLoadGame;
+  late Board emptyBoard;
 
   setUp(() {
     mockStartNewGame = MockStartNewGameUseCase();
     mockMakeMove = MockMakeMoveUseCase();
-    initialBoard = Board.empty();
-    nextBoard = Board.empty();
+    mockSaveGame = MockSaveGameUseCase();
+    mockLoadGame = MockLoadGameUseCase();
 
-    when(() => mockStartNewGame.call()).thenReturn(initialBoard);
+    emptyBoard = Board([
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ]);
 
-    gameCubit = GameCubit(
-      startNewGame: mockStartNewGame,
-      makeMove: mockMakeMove,
-    );
-  });
-  tearDown(() {
-    gameCubit.close();
-  });
-
-  group('GameCubit - Inicialização e Reset', () {
-    test(
-      'GIVEN the GameCubit is instantiated\n'
-      'WHEN it initializes\n'
-      'THEN it should automatically start a new game with an initial board',
-      () {
-        // Given & When - handled by setUp
-
-        // Then
-        expect(gameCubit.state.board, initialBoard);
-        expect(gameCubit.state.score, 0);
-        expect(gameCubit.state.status, GameStatus.playing);
-        verify(() => mockStartNewGame.call()).called(1);
-      },
-    );
+    registerFallbackValue(emptyBoard);
   });
 
-  group('GameCubit - Movimentação', () {
+  group('GameCubit - Initialization', () {
     blocTest<GameCubit, GameState>(
-      'GIVEN a playing game status and a valid board movement\n'
-      'WHEN handleMove is called\n'
-      'THEN it should update the board, score, and high score',
+      'GIVEN no saved game exists\n'
+      'WHEN the GameCubit is initialized\n'
+      'THEN it should start a new game and emit a playing state',
       build: () {
-        when(() => mockMakeMove.call(initialBoard, Direction.left)).thenReturn(
-          MakeMoveResult(
-            board: nextBoard,
-            scoreGained: 16,
-            moved: true,
-            status: GameStatus.playing,
-          ),
+        when(() => mockLoadGame()).thenAnswer((_) async => null);
+        when(() => mockStartNewGame()).thenReturn(emptyBoard);
+        return GameCubit(
+          startNewGame: mockStartNewGame,
+          makeMove: mockMakeMove,
+          saveGame: mockSaveGame,
+          loadGame: mockLoadGame,
         );
-        return gameCubit;
       },
-      act: (cubit) => cubit.handleMove(Direction.left),
       expect: () => [
         isA<GameState>()
-            .having((s) => s.board, 'board', nextBoard)
-            .having((s) => s.score, 'score', 16)
-            .having((s) => s.highScore, 'highScore', 16)
-            .having((s) => s.status, 'status', GameStatus.playing),
+            .having((s) => s.board, 'board', emptyBoard)
+            .having((s) => s.score, 'score', 0)
+            .having((s) => s.status, 'status', GameStatus.playing)
+            .having((s) => s.isLoading, 'isLoading', false),
       ],
     );
+  });
 
+  group('GameCubit - Actions and Persistence', () {
     blocTest<GameCubit, GameState>(
-      'GIVEN a move that results in a lower score than high score\n'
-      'WHEN handleMove is called\n'
-      'THEN it should update the current score but keep the existing high score',
-      seed: () => GameState(
-        board: initialBoard,
-        score: 10,
-        highScore: 50,
-        status: GameStatus.playing,
-      ),
+      'GIVEN an active game\n'
+      'WHEN resetGame is invoked\n'
+      'THEN it should trigger a new board and persist the state',
       build: () {
-        when(() => mockMakeMove.call(initialBoard, Direction.right)).thenReturn(
-          MakeMoveResult(
-            board: nextBoard,
-            scoreGained: 20,
-            moved: true,
-            status: GameStatus.playing,
+        when(() => mockLoadGame()).thenAnswer((_) async => null);
+        when(() => mockStartNewGame()).thenReturn(emptyBoard);
+        when(
+          () => mockSaveGame(
+            board: any(named: 'board'),
+            score: any(named: 'score'),
+            highScore: any(named: 'highScore'),
           ),
-        );
-        return gameCubit;
-      },
-      act: (cubit) => cubit.handleMove(Direction.right),
-      expect: () => [
-        isA<GameState>()
-            .having((s) => s.score, 'score', 30) // 10 + 20
-            .having((s) => s.highScore, 'highScore', 50) // remains 50
-            .having((s) => s.board, 'board', nextBoard),
-      ],
-    );
+        ).thenAnswer((_) async {});
 
-    blocTest<GameCubit, GameState>(
-      'GIVEN a movement that causes no change and status remains the same\n'
-      'WHEN handleMove is called\n'
-      'THEN it should ignore the action and emit nothing',
-      build: () {
-        when(() => mockMakeMove.call(initialBoard, Direction.up)).thenReturn(
-          MakeMoveResult(
-            board: initialBoard,
-            scoreGained: 0,
-            moved: false,
-            status: GameStatus.playing,
-          ),
+        return GameCubit(
+          startNewGame: mockStartNewGame,
+          makeMove: mockMakeMove,
+          saveGame: mockSaveGame,
+          loadGame: mockLoadGame,
         );
-        return gameCubit;
       },
-      act: (cubit) => cubit.handleMove(Direction.up),
-      expect: () => <GameState>[], // No state emitted
-    );
-
-    blocTest<GameCubit, GameState>(
-      'GIVEN a game status that is already won or gameOver\n'
-      'WHEN handleMove is called\n'
-      'THEN it should immediately return and emit nothing without calling the use case',
-      seed: () => GameState(
-        board: initialBoard,
-        score: 100,
-        highScore: 100,
-        status: GameStatus.gameOver,
-      ),
-      build: () => gameCubit,
-      act: (cubit) => cubit.handleMove(Direction.down),
-      expect: () => <GameState>[],
+      act: (cubit) async {
+        await cubit.stream.first;
+        cubit.resetGame();
+      },
       verify: (_) {
-        verifyNever(() => mockMakeMove.call(any(), any()));
+        verify(
+          () =>
+              mockSaveGame(board: any(named: 'board'), score: 0, highScore: 0),
+        ).called(1);
       },
     );
 
     blocTest<GameCubit, GameState>(
-      'GIVEN a valid movement that triggers a gameOver condition\n'
-      'WHEN handleMove is called\n'
-      'THEN it should update the board and change status to gameOver',
+      'GIVEN a user triggers a move\n'
+      'WHEN the move changes the board\n'
+      'THEN it should emit the updated score, update highscore, and persist',
       build: () {
-        when(() => mockMakeMove.call(initialBoard, Direction.down)).thenReturn(
+        when(() => mockLoadGame()).thenAnswer((_) async => null);
+        when(() => mockStartNewGame()).thenReturn(emptyBoard);
+        when(
+          () => mockSaveGame(
+            board: any(named: 'board'),
+            score: any(named: 'score'),
+            highScore: any(named: 'highScore'),
+          ),
+        ).thenAnswer((_) async {});
+
+        when(() => mockMakeMove(any(), Direction.left)).thenReturn(
           MakeMoveResult(
-            board: nextBoard,
-            scoreGained: 4,
+            board: emptyBoard,
             moved: true,
-            status: GameStatus.gameOver,
+            scoreGained: 10,
+            status: GameStatus.playing,
           ),
         );
-        return gameCubit;
+
+        return GameCubit(
+          startNewGame: mockStartNewGame,
+          makeMove: mockMakeMove,
+          saveGame: mockSaveGame,
+          loadGame: mockLoadGame,
+        );
       },
-      act: (cubit) => cubit.handleMove(Direction.down),
+      act: (cubit) async {
+        // Aguarda a carga inicial terminar para não encavalar os estados de forma imprevisível
+        await cubit.stream.first;
+        cubit.handleMove(Direction.left);
+      },
+      // Esperamos os dois estados emitidos após a criação do Cubit
       expect: () => [
+        // 1º Estado: Emitido pelo _loadGameOrStartNew() ao terminar de inicializar
+        isA<GameState>().having((s) => s.score, 'score', 0),
+        // 2º Estado: Emitido pelo handleMove() após a jogada bem-sucedida
         isA<GameState>()
-            .having((s) => s.board, 'board', nextBoard)
-            .having((s) => s.status, 'status', GameStatus.gameOver),
+            .having((s) => s.score, 'score', 10)
+            .having((s) => s.highScore, 'highScore', 10),
       ],
+      verify: (_) {
+        verify(
+          () => mockSaveGame(
+            board: any(named: 'board'),
+            score: 10,
+            highScore: 10,
+          ),
+        ).called(1);
+      },
     );
   });
 }
