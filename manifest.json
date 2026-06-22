@@ -1,11 +1,11 @@
 {
-    "name": "number_merge_puzzle",
-    "short_name": "number_merge_puzzle",
+    "name": "Number Merge Puzzle",
+    "short_name": "Number Merge Puzzle",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Tente combinar os números para chegar ao 2048!",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
