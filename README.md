@@ -1,6 +1,8 @@
 # 🧩 Number Merge Puzzle (WIP)
 
 Uma aplicação Flutter para estudar DDD, Clean Architecture, BLoC e boas práticas de testes, usando uma mecânica inspirada em quebra-cabeças de fusão de números.
+## Joque aqui 
+https://onyrius.github.io/number_merge_puzzle/
 
 ### 🛠️ Autor
 
